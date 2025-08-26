@@ -11,6 +11,7 @@ Vår kjernefilosofi er å bygge en **"Next.js-sentrisk" applikasjon** som er:
 - **Performant:** Ved å utnytte server-først datahenting og avanserte caching-strategier.
 - **Robust:** Ved å bruke et sterkt, ende-til-ende typesystem og en formell state management-modell.
 - **Vedlikeholdbar:** Ved å etablere en klar ansvarsfordeling mellom de ulike lagene i applikasjonen.
+- - **Functional Programming:** Ved å utnytte server-først datahenting og avanserte caching-strategier.
 
 Vi bruker en **"best-of-breed"**-tilnærming, der vi velger de beste spesialiserte verktøyene for hver jobb, fremfor å låse oss til én enkelt "alt-i-ett"-løsning.
 
