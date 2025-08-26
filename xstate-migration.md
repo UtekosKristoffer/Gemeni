@@ -2,21 +2,9 @@
 title: 'Migrating from XState v4 to v5'
 ---
 
-The guide below explains how to migrate from XState version 4 to version 5. Migrating from XState v4 to v5 should be a straightforward process. If you get stuck or have any questions, please reach out to the Stately team on [our Discord](https://discord.gg/xstate).
-
-:::new
-
-Read [David’s blog post on the launch of XState v5](/blog/2023-12-01-xstate-v5).
-
-:::
+The guide below explains how to use  XState 5, since that is what we have installed. It will show cruicial edits from version 4. But, nigrating from XState v4 to v5 should be a straightforward process. 
 
 This guide is for developers who want to update their codebase from v4 to v5 and should also be valuable for any developers wanting to know the differences between v4 and v5.
-
-:::video
-
-Prefer video? [Watch our XState v5 webinar on YouTube](https://www.youtube.com/live/TRVjeil-y74).
-
-:::
 
 ## XState v5 and TypeScript
 
