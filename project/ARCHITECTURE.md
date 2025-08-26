@@ -4,7 +4,7 @@
 
 ## 1. Introduksjon og Filosofi
 
-Dette dokumentet beskriver den overordnede arkitekturen for Utekos' "Bring Your Own Stack" Shopify Headless-plattform. Plattformen er bygget med Next.js 15 (App Router) og en nøye utvalgt, moderne verktøystabel.
+Dette dokumentet beskriver den overordnede arkitekturen for Utekos' Shopify Headless-plattform. Plattformen er bygget med Next.js 15 (App Router) og en nøye utvalgt, moderne verktøystabel.
 
 Vår kjernefilosofi er å bygge en **"Next.js-sentrisk" applikasjon** som er:
 
