@@ -1,6 +1,4 @@
-## //Path: .github/typescript/copilot-typescript-breaking-changes.md
 
-## applyTo: '\*\*'
 
 # Typescript New Features
 
