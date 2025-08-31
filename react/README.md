@@ -98,7 +98,7 @@ SEE FILE server-components.md
 
 ## Clients Components
 
-SEE file use-client.md and 05-server-and-client-components.md
+SEE file use-client.md
 
 
 ## "use server
