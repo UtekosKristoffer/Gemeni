@@ -36,33 +36,8 @@ Vi bruker en **"best-of-breed"**-tilnærming, der vi velger de beste spesialiser
 | **React Hook Form & Zod**            | Håndterer **klient-side validering og form-state**. Gir en overlegen brukeropplevelse med umiddelbar feedback.  Benytter utdivdelsen @zod-validation-error  |
 | **Shadcn UI / Radix / Tailwind**     | Vårt designsystem og verktøykasse for å bygge UI-komponenter.                                                                                                        |
 
-## 4. Sentrale Dataflyter
 
-### A. Dataflyt for Lese-operasjoner (f.eks. Laste en Produktside)
-
-1.  **Request:** En bruker navigerer til `/products/[handle]`.
-2.  **Server-rendering:** Next.js kjører `page.tsx` på serveren.
-3.  **Server-side Fetch:** `queryClient.prefetchQuery` kalles. Denne bruker vår `Fetcher.ts`, som igjen bruker `shopifyRequest` til å hente produktdata fra Shopify.
-4.  **Server-side Caching:** Next.js' utvidede `fetch` cacher automatisk Shopify-responsen i sin Data Cache.
-5.  **Dehydrering:** `dehydrate(queryClient)` serialiserer den fylte TanStack Query-cachen.
-6.  **Respons:** Serveren sender ferdig-rendret HTML og den dehydrerte cachen til klienten.
-7.  **Hydrering:** På klienten tar `<HydrationBoundary>` imot den dehydrerte staten og fyller klientens `QueryClient`.
-8.  **Klient-rendering:** `ProductPageClient.tsx` kaller `useGetProductQuery`. Dataen er **øyeblikkelig tilgjengelig** fra den hydrerte cachen, og ingen `pending`-tilstand vises.
-
-### B. Dataflyt for Skrive-operasjoner (f.eks. Legge en Vare i Kurven)
-
-1.  **Interaksjon:** Brukeren fyller ut et skjema i `<AddToCart>` og klikker "Legg i kurv".
-2.  **Klient-validering:** React Hook Form og Zod validerer inputen umiddelbart.
-3.  **Action Call:** Ved `onSubmit` kaller komponenten en **Server Action** (`addItemAction`) via React 19s `useActionState`-hook.
-4.  **Optimistic UI (Valgfritt):** `useOptimistic`-hooket oppdaterer UI-et _umiddelbart_ for å vise varen i kurven.
-5.  **Server-prosessering:** `addItemAction` kjører på serveren. Den validerer inputen på nytt, kaller `shopifyRequest` for å utføre mutasjonen, og håndterer cookies.
-6.  **Server-cache Invalidering:** Etter en vellykket mutasjon, kaller Server Action-en **`revalidateTag('cart')`**. Dette markerer all server-cachet data relatert til handlekurven som utdatert.
-7.  **Respons:** Server Action-en returnerer et suksess/feil-objekt til klienten.
-8.  **Klient-state Håndtering:** `useActionState` mottar responsen.
-9.  **Klient-cache Invalidering:** ikke bestemt, men vi tilstreber å også benytte oss av Tanstack Query for å unngå manuelle hooks som useEffects. Forslaget er å fetche data på server og hydrere data på klientsiden via preFetchQuery `queryClient.prefetchQuery({` eller benytte `@tanstack/react-query-next-experimental`, da det virker som en spennende løsning. Denne pakken lar deg hente data på serveren (i en klientkomponent) bare ved å kalle useSuspenseQuery i komponenten din. Resultatene vil deretter bli strømmet fra serveren til klienten etter hvert som SuspenseBoundaries løses.
-10. **Sømløs UI-oppdatering:** TanStack Query henter fersk data i bakgrunnen, og alle komponenter som bruker `useGetCartQuery` (som `CartDrawer`) oppdaterer seg automatisk og sømløst.
-
-## 5. Nåværende Mappestruktur (Høynivå)
+## 4. Nåværende Mappestruktur (Høynivå)
 
 ```
 tree src/components/cart
