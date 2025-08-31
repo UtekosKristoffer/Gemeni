@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 
-import { getMenu } from '@/lib/helpers/menu'
+import { fetchMenu } from '@/lib/helpers/menu'
 import { getCartIdFromCookie } from '@/lib/helpers/cart/getCartIdFromCookie'
 import { getCachedCart } from '@/lib/helpers/cart/getCachedCart'
 import Providers from '@/components/providers/Providers'
@@ -34,7 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   // Kjører uavhengige datahentinger parallelt for bedre ytelse
-  const [mainMenu, cartId] = await Promise.all([getMenu('header-mega-menu'), getCartIdFromCookie()])
+  const [mainMenu, cartId] = await Promise.all([fetchMenu('header-mega-menu'), getCartIdFromCookie()])
 
   const initialCart = await getCachedCart(cartId)
 
