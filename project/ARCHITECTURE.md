@@ -20,7 +20,6 @@ Vi bruker en **"best-of-breed"**-tilnærming, der vi velger de beste spesialiser
 - **Rendering (ISR er Standard):** Vi bruker Incremental Static Regeneration som vår primære renderingstrategi. Sider er lynraske og serveres fra en statisk cache, men oppdateres automatisk i bakgrunnen for å sikre at dataen er fersk.
 - **Dataflyt (Server-først):** Initiell data for en side hentes alltid på serveren. Vi bruker TanStack Querys hydreringsmønster for å sende denne dataen til klienten, noe som gir en øyeblikkelig sideinnlasting uten "loading spinners".
 - **Mutasjoner (React 19 Native):** Alle skrive-operasjoner håndteres av React 19s innebygde verktøy. Server Actions er vår sikre transportmekanisme, og `useActionState`/`useOptimistic` håndterer UI-staten på klienten.
-- **Typesikkerhet (Ende-til-ende):** Vi bruker TypeScript i "strict mode" og GraphQL Code Generator for å skape et fullstendig typesikkert system, fra GraphQL-schemaet helt ut til våre React-komponenter.
 - **State Management (Dekoblet):** Vi har en klar separasjon mellom _server state_ (data fra Shopify) og _klient state_ (UI-tilstand).
 - **Kompilator (Stol på React Compiler):** Vi unngår manuell memoization (`useMemo`, `useCallback`) og skriver enklere, mer lesbar kode, i tillit til at React Compiler håndterer optimaliseringene.
 
@@ -31,10 +30,10 @@ Vi bruker en **"best-of-breed"**-tilnærming, der vi velger de beste spesialiser
 | **Next.js 15 (App Router)**          | Rammeverket for hele applikasjonen. Håndterer routing, rendering, server-infrastruktur og caching.                                                                   |
 | **React 19**                         | Biblioteket for å bygge brukergrensesnittet. Vi bruker de nyeste funksjonene som Server Components og Actions.                                                       |
 | **TanStack Query v5**                | Håndterer all **klient-side server state** for **lese-operasjoner (queries)**. Ansvarlig for caching, refetching, og synkronisering av data.                         |
-| **XState v5**                        | Håndterer all **klient-side UI state**. Vi bruker `@xstate/store` for enkel state (f.eks. `isCartOpen`) og `xstate` (`createMachine`) for komplekse brukerprosesser. |
-| **GraphQL Code Generator**           | Automatiserer typesikkerhet. Genererer typesikre TanStack Query hooks fra våre `.graphql`-filer.                                                                     |
+| XState v5 | Håndterer synkron, global UI-state. @xstate/store brukes for enkle verdier (f.eks. isCartOpen), mens createMachine er reservert for komplekse, flerstegs UI-prosesser. Asynkron server-state (loading, errors) håndteres av TanStack Query. |
+                                                                     |
 | **`@shopify/storefront-api-client`** | Vår lavnivå, offisielle nettverksklient for å kommunisere med Shopify Storefront API-et.                                                                             |
-| **React Hook Form & Zod**            | Håndterer **klient-side validering og form-state**. Gir en overlegen brukeropplevelse med umiddelbar feedback.                                                       |
+| **React Hook Form & Zod**            | Håndterer **klient-side validering og form-state**. Gir en overlegen brukeropplevelse med umiddelbar feedback.  Benytter utdivdelsen @zod-validation-error  |
 | **Shadcn UI / Radix / Tailwind**     | Vårt designsystem og verktøykasse for å bygge UI-komponenter.                                                                                                        |
 
 ## 4. Sentrale Dataflyter
@@ -63,14 +62,28 @@ Vi bruker en **"best-of-breed"**-tilnærming, der vi velger de beste spesialiser
 9.  **Klient-cache Invalidering:** ikke bestemt, men vi tilstreber å også benytte oss av Tanstack Query for å unngå manuelle hooks som useEffects. Forslaget er å fetche data på server og hydrere data på klientsiden via preFetchQuery `queryClient.prefetchQuery({` eller benytte `@tanstack/react-query-next-experimental`, da det virker som en spennende løsning. Denne pakken lar deg hente data på serveren (i en klientkomponent) bare ved å kalle useSuspenseQuery i komponenten din. Resultatene vil deretter bli strømmet fra serveren til klienten etter hvert som SuspenseBoundaries løses.
 10. **Sømløs UI-oppdatering:** TanStack Query henter fersk data i bakgrunnen, og alle komponenter som bruker `useGetCartQuery` (som `CartDrawer`) oppdaterer seg automatisk og sømløst.
 
-## 5. Utdrag av nåværende Mappestruktur (Høynivå)
+## 5. Nåværende Mappestruktur (Høynivå)
 
 ```
+tree src/components/cart
+src/components/cart
+├── AddToCart.tsx
+├── CartBody.tsx
+├── CartDrawer.tsx
+├── CartFooter.tsx
+├── CartHeader.tsx
+├── CartLineItem.tsx
+├── CartTrigger.tsx
+└── index.ts
+
+1 directory, 8 files
+bash-3.2$ tree src
 src
 ├── app
 │   ├── (products)
 │   │   ├── (handle)
 │   │   │   └── page.tsx
+│   │   ├── layout.tsx
 │   │   ├── page.tsx
 │   │   └── products
 │   │       └── page.tsx
@@ -79,13 +92,11 @@ src
 │   ├── layout.tsx
 │   └── page.tsx
 ├── clients
-│   ├── CartProcessClient.tsx
+│   ├── CartMutationClient.tsx
 │   ├── getQueryClient.ts
 │   ├── makeQueryClient.ts
 │   └── storefrontApiClient.ts
 ├── components
-│   ├── AddToCart.tsx
-│   ├── CartDrawer.tsx
 │   ├── ColorSelector.tsx
 │   ├── DesktopNavigation.tsx
 │   ├── Footer.tsx
@@ -94,9 +105,19 @@ src
 │   ├── MobilMenuPanel.tsx
 │   ├── MobileMenuItem.tsx
 │   ├── ProductCard.tsx
+│   ├── ProductClientView.tsx
 │   ├── ProductPageAccordion.tsx
 │   ├── ProductPageView.tsx
 │   ├── RichTextRenderer.tsx
+│   ├── cart
+│   │   ├── AddToCart.tsx
+│   │   ├── CartBody.tsx
+│   │   ├── CartDrawer.tsx
+│   │   ├── CartFooter.tsx
+│   │   ├── CartHeader.tsx
+│   │   ├── CartLineItem.tsx
+│   │   ├── CartTrigger.tsx
+│   │   ├── index.ts
 │   ├── providers
 │   │   └── Providers.tsx
 │   ├── renderNode.tsx
@@ -110,6 +131,7 @@ src
 │       ├── ProductGrid.tsx
 │       ├── QuantitySelector.tsx
 │       ├── SizeSelector.tsx
+│       ├── Toast.tsx
 │       ├── accordion.tsx
 │       ├── aspect-ratio.tsx
 │       ├── breadcrumb.tsx
@@ -118,25 +140,46 @@ src
 │       ├── command.tsx
 │       ├── dialog.tsx
 │       ├── drawer.tsx
+│       ├── form.tsx
 │       ├── input.tsx
+│       ├── label.tsx
 │       ├── navigation-menu.tsx
 │       ├── separator.tsx
 │       ├── sheet.tsx
 │       ├── sidebar.tsx
 │       ├── skeleton.tsx
+│       ├── sonner.tsx
 │       └── tooltip.tsx
-├── hooks
-│   ├── index.ts
-│   ├── use-mobile.ts
-│   ├── useCartOpen.ts
-│   ├── useCartOptimistic.ts
-│   ├── useCartPending.ts
-│   └── useCartQuery.tsx
+├── db
+│   ├── data
+│   │   └── products.json
+│   └── zod
+│       ├── cartRegistry.ts
+│       ├── cartSchemas.ts
+│       ├── env.ts
+│       ├── validate.ts
+│       └── zodConfig.ts
 ├── lib
+│   ├── AddToBag.tsx
+│   ├── actions
+│   │   ├── addLineAction.ts
+│   │   ├── clearCartAction.ts
+│   │   ├── createCartMutationOrchestrator.ts
+│   │   ├── perform
+│   │   │   ├── index.ts
+│   │   │   ├── performCartClearMutation.ts
+│   │   │   ├── performCartLinesAddMutation.ts
+│   │   │   ├── performCartLinesRemoveMutation.ts
+│   │   │   └── performCartLinesUpdateMutation.ts
+│   │   ├── removeCartLineAction.ts
+│   │   └── updateLineQuantityAction.ts
 │   ├── actors
-│   │   └── CartProcessContext.ts
+│   │   └── CartMutationContext.ts
 │   ├── cn.ts
 │   ├── constants
+│   │   ├── cookies.ts
+│   │   ├── error-codes.ts
+│   │   ├── errorCodes.ts
 │   │   ├── header-mega-menu-handle.ts
 │   │   ├── index.ts
 │   │   ├── next-public-server-url.ts
@@ -145,16 +188,37 @@ src
 │   │   ├── shopify-public-token.ts
 │   │   ├── shopify-store-domain.ts
 │   │   └── store-name.ts
-│   ├── helpers
-│   │   ├── getCachedCart.ts
-│   │   ├── getCart.ts
-│   │   ├── getCartIdClient.ts
-│   │   ├── getCartIdFromCookie.ts
-│   │   ├── getMenu.ts
-│   │   ├── getProductByHandle.ts
-│   │   ├── getProducts.ts
+│   ├── errors
+│   │   ├── CartNotFoundError.ts
+│   │   ├── MissingCartIdError.ts
+│   │   ├── ShopifyApiError.ts
+│   │   ├── formatShopifyErrorResponse.ts
+│   │   ├── handleShopifyErrors.ts
 │   │   ├── index.ts
-│   │   └── normalizeCart.ts
+│   │   ├── isShopifyErrorResponse.ts
+│   │   └── mapThrownErrorToActionResult.ts
+│   ├── helpers
+│   │   ├── cart
+│   │   │   ├── cartForm.ts
+│   │   │   ├── fetchCart.ts
+│   │   │   ├── getCachedCart.ts
+│   │   │   ├── getCartIdClient.ts
+│   │   │   ├── getCartIdFromCookie.ts
+│   │   │   ├── index.ts
+│   │   │   └── normalizeCart.ts
+│   │   ├── index.ts
+│   │   ├── menu
+│   │   │   ├── getMenu.ts
+│   │   │   ├── index.ts
+│   │   │   └── normalizeMenu.ts
+│   │   ├── products
+│   │   │   └── getProducts.ts
+│   │   └── suspense.ts
+│   ├── mutations
+│   │   ├── cartLinesAdd.ts
+│   │   ├── cartLinesRemove.ts
+│   │   ├── cartLinesUpdate.ts
+│   │   └── index.ts
 │   ├── queries
 │   │   ├── cartQuery.ts
 │   │   ├── index.ts
@@ -163,7 +227,7 @@ src
 │   │   └── productsQuery.ts
 │   ├── state
 │   │   ├── cartStore.ts
-│   │   └── createCartProcess.ts
+│   │   └── createCartMutationMachine.ts
 │   └── utils
 │       ├── className.ts
 │       ├── formatPrice.ts
@@ -171,12 +235,32 @@ src
 │       ├── menuReducer.ts
 │       ├── normalizeShopifyUrl.ts
 │       └── safeJsonParse.ts
-└── types
-    ├── home.tsx
+├── types
+│   ├── cart.ts
+│   ├── errors.ts
+│   ├── image.ts
+│   ├── index.ts
+│   ├── interface
+│   │   ├── index.ts
+│   │   └── nodes.ts
+│   ├── menu.ts
+│   ├── metaobject.ts
+│   ├── money.ts
+│   ├── nodes.ts
+│   └── products.ts
+└── useHooks
     ├── index.ts
-    └── interface
-        ├── index.ts
-        └── interface.ts
+    ├── use-mobile.ts
+    ├── useAddToCart.ts
+    ├── useCartMutation.ts
+    ├── useCartOpen.ts
+    ├── useCartOptimistic.ts
+    ├── useCartPending.ts
+    ├── useCartQuery.tsx
+    ├── useCartStoreSnapshot.ts
+    ├── usePrevious.ts
+    └── useSet.ts
+
 
 ## Særlige usikkerhetsmomenter og generelle påpekelser
 
