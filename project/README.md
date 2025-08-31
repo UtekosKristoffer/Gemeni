@@ -10,3 +10,6 @@
 
 ## code-structure.md contains details about how functions and generale code should be written.
 
+## The folder ui-components contains files representing reusable ui-components that should be used and re-used in the project.
+
+## The folder config contains files and information about configuration and settings in the project.
