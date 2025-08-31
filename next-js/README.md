@@ -13,3 +13,7 @@
 ## Understand the option with Suspense and how it can be used both for fetching and fallback.
 
 ## Components are Server Components as default
+
+## I have activated cacheComponents, typedRoutes and reactCompiler, and are usining unstable_cache + revalidateTag as a main strategy - remember that.
+
+## READ FILE 17-upgrading.md for undestanding the main upgrated features, changes and opportunities.
