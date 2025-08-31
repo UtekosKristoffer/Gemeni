@@ -6,3 +6,4 @@
 ## file tanstack-nextjs-example.md altso contains examples for next.js
 
 
+## Copilot: Note that i have installe the extension   "@tanstack/react-query-next-experimental": version "^5.85.5",
