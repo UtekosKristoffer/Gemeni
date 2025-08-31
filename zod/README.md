@@ -8,6 +8,6 @@
 
 ## To gain knowledge about upgrade from version 3 to 4, read zod-migration.md
 
-## New directives are zod/core, zod/min and features like registry, metadata and jsonSchema. 
+## New directives are zod/core, zod/min and features like registry, Codex, metadata and jsonSchema. 
 
 ## In addition, it is pointed out that there are many other changes, which also entail the deprecation of much standard functionality, so the attached files are of the highest priority to become familiar with.
