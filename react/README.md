@@ -1,10 +1,16 @@
 #  This folder contains carefully selected documentation from React - version 19, sorted into separate files.
 
+## For understanding the React Compiler - visit the folder react-compiler and read its files.
+
 ### react-dom@19.1 - is what this project are depending on, with Next.js version 15.5
 
 ## Important updates are as follows:
 
 ## Key Features and Hooks
+
+## Visit the folder named hooks
+
+### The 
 
 1. useActionState
 
@@ -14,7 +20,7 @@ useActionState(action, initialState, permalink?)
 
 const [state, formAction, isPending] = useActionState(fn, initialState, permalink?);
 
-SEE FILE useActionState.md
+SEE FILE hooks/useActionState.md
 
 2. use
 
@@ -24,7 +30,7 @@ use(resource)
 
 const value = use(resource);
 
-SEE FILE use.md
+SEE FILE hooks/use.md
 
 3. useDeferredValue
 
@@ -32,7 +38,7 @@ useDeferredValue is a React Hook that lets you defer updating a part of the UI.
 
 const deferredValue = useDeferredValue(value)
 
-SEE FILE useDeferredValue.md
+SEE FILE hooks/useDeferredValue.md
 
 4. useState
 
@@ -40,7 +46,7 @@ useState is a React Hook that lets you add a state variable to your component.
 
 const [state, setState] = useState(initialState)
 
-SEE FILE useState.md
+SEE FILE hooks/useState.md
 
 5. useFormStatus
 
@@ -50,13 +56,15 @@ useFormStatus()
 
 const { pending, data, method, action } = useFormStatus();
 
-SEE FILE useFormStatus.md
+SEE FILE hooks/useFormStatus.md
 
 6. useId
 
 useId is a React Hook for generating unique IDs that can be passed to accessibility attributes.
 
 const id = useId()
+
+SEE FILE hooks/useId.md
 
 7. useReducer
 
@@ -66,11 +74,13 @@ useRef(initialValue)
 
 const [state, dispatch] = useReducer(reducer, initialArg, init?)
 
-SEE FILE useReducer.md
+SEE FILE hooks/useReducer.md
 
 8. useRef 
 
 useRef is a React Hook that lets you reference a value that’s not needed for rendering.
+
+SEE FILE hooks/useRef.md
 
 ## Server Functions
 
@@ -88,7 +98,7 @@ SEE FILE server-components.md
 
 ## Clients Components
 
-SEE file use-client.md and server-client-components.md
+SEE file use-client.md and 05-server-and-client-components.md
 
 
 ## "use server
