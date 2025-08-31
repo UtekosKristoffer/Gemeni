@@ -7,3 +7,6 @@
 ## ARCHITECTURE.md must be read to understand basic rules, principles and main functionality in our project.
 
 ## DESIGN_SYSTEM.md contains information about style and the full global.css - file from the project.
+
+## code-structure.md contains details about how functions and generale code should be written.
+
