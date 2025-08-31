@@ -88,6 +88,7 @@ SEE FILE server-components.md
 
 ## Clients Components
 
+SEE file use-client.md and server-client-components.md
 
 
 ## "use server
